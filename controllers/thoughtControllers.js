@@ -1,7 +1,30 @@
 const { Thought, User } = require('../models'); 
 
-
 module.exports = {
+    //POST a new thought
+    async createThought(req, res) {
+        try {
+            const user = await User.findOne({ _id: req.body.userId }); //retrieves the user information based on the user id in the request body
+
+            if (!user) {
+                return res.status(404).json( {message: 'User not found'} ); //if user not found, return an error
+            }
+            const thought = new Thought({
+                thoughtText: req.body.thoughtText,
+                username: user.username, 
+            }); 
+
+            await thought.save(); //save the new thought
+
+            user.thoughts.push(thought._id); //add the thought to the user's thoughts array
+
+            await user.save(); //save the updated user
+
+            res.json(thought); 
+        } catch (err) {
+            res.status(500).json(err); 
+        }
+    },
     //GET all thoughts
     async getThoughts(req, res) {
         try {
@@ -11,35 +34,7 @@ module.exports = {
             res.status(500).json(err); 
         }
     }, 
-    //POST a new thought
-    async createThought(req, res) {
-        try {
-            //retrieves the user information based on the user id in the reques body
-            const user = await User.findOne({ _id: req.body.userId }); 
-
-            //if user not foun, return an error
-            if (!user) {
-                return res.status(404).json( {message: 'User not found'} ); 
-            }
-            const thought = new Thought({
-                thoughtText: req.body.thoughtText,
-                username: user.username, 
-            }); 
-
-            await thought.save(); 
-
-            //add the thought to the isers thoughts array
-            user.thoughts.push(thought._id); 
-
-            //save the updated user
-            await user.save(); 
-
-            res.json(thought); 
-        } catch (err) {
-            res.status(500).json(err); 
-        }
-    },
-    //get a single thought by ID
+    //GET a single thought by ID
     async getSingleThought(req, res) {
         try {
             const thought = await Thought.findOne({ _id: req.params.thoughtId })
@@ -53,7 +48,7 @@ module.exports = {
             res.status(500).json(err); 
         }
     },
-    //update a thought
+    //UPDATE a thought
     async updateThought(req, res) {
         try {
             const thought = await Thought.findOneAndUpdate(
@@ -70,7 +65,7 @@ module.exports = {
             res.status(500).json(err); 
         }
     },
-    //delete thought by ID
+    //DELETE thought by ID
     async deleteThought(req, res) {
         try {
             const thought = await Thought.findOneAndDelete({ _id: req.params.thoughtId }); 
@@ -83,7 +78,7 @@ module.exports = {
             res.status(500).json(err); 
         }
     },
-    //create a reaction 
+    //CREATE a reaction 
     async createReation(req, res) {
         try {
             const thoughtData = await Thought.findOneAndUpdate(
@@ -101,7 +96,7 @@ module.exports = {
         res.status(500).json(err); 
         }
     },
-    //delete reaction by id
+    //DELETE reaction by id
     async deleteReaction(req, res) {
         try {
             const { thoughtId, reactionId } = req.params; 
@@ -122,4 +117,4 @@ module.exports = {
           res.status(500).json(err);
         }
     },  
-}; 
+};

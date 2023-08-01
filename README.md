@@ -1,6 +1,6 @@
 Sure! Here's the updated README with the correct link for the demo video:
 
-# Social Network API 🚀 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+# Social Network API 🚀
 
 ## Description
 This is a RESTful API for a social network application. It allows users to create accounts, share thoughts, add friends, and interact with other users.
